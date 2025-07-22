@@ -8,10 +8,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Scanner;
 import java.util.List;
+import java.util.ArrayList;
 
 public class ConsoleMenu {
     private ProdutoService produtoService = new ProdutoService();
     private ClienteService clienteService = new ClienteService();
+    private List<Nota> notasEmitidas = new ArrayList<>();
     private Scanner scanner = new Scanner(System.in);
 
     //--------------MENU----------------------
@@ -40,7 +42,7 @@ public class ConsoleMenu {
                 case 3 -> cadastrarCliente();
                 case 4 -> atualizarCliente();
                 case 5 -> criarNotaCompra();
-                //case 6 -> listarNotasEmitidas();
+                case 6 -> listarNotasEmitidas();
                 case 7 -> listarProdutos();
                 case 8 -> listarClientes();
             }
@@ -132,6 +134,23 @@ public void criarNotaCompra(){
 
         System.out.println("\n>>> NOTA DE COMPRA GERADA <<<");
         novaNota.exibirResumo();
+
+        this.notasEmitidas.add(novaNota);
+        System.out.println("\nNota de compra gerada e registrada com sucesso!");
+    }
+
+    public void listarNotasEmitidas(){
+        System.out.println("\n>>> NOTAS DE COMPRA EMITIDAS <<<");
+
+        if(notasEmitidas.isEmpty()){
+            System.out.println("\nNenhuma nota de compra foi gerada.");
+            return;
+        }
+
+        for(Nota nota : notasEmitidas){
+            nota.exibirResumo();
+            System.out.println("====================================");
+        }
     }
 
 
