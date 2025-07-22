@@ -2,10 +2,12 @@ package loja.ui;
 
 import loja.model.produto.*;
 import loja.model.cliente.*;
+import loja.model.nota.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Scanner;
+import java.util.List;
 
 public class ConsoleMenu {
     private ProdutoService produtoService = new ProdutoService();
@@ -37,12 +39,99 @@ public class ConsoleMenu {
                 case 2 -> atualizarProduto();
                 case 3 -> cadastrarCliente();
                 case 4 -> atualizarCliente();
-                //case 5 -> criarNotaCompra();
+                case 5 -> criarNotaCompra();
                 //case 6 -> listarNotasEmitidas();
                 case 7 -> listarProdutos();
                 case 8 -> listarClientes();
             }
         } while (opcao != 0);
+    }
+
+public void criarNotaCompra(){
+        System.out.println("\n>>> CRIAR NOVA NOTA DE COMPRA <<<");
+
+        List<Cliente> clientesDisponiveis = clienteService.listarTodos();
+        if(clientesDisponiveis.isEmpty()){
+            System.out.println("Não há nenhum cliente cadastrado.");
+            return;
+        }
+
+        System.out.println("\n>>> CLIENTES CADASTRADOS <<<");
+        for(Cliente c : clientesDisponiveis){
+            System.out.println("ID: " + c.getId() + ", Nome: " + c.getNome());
+        }
+
+        Cliente clienteSelecionado = null;
+        String cpfCliente;
+        while(clienteSelecionado == null){
+            System.out.println("Digite o ID do cliente para a nota: ");
+            cpfCliente = scanner.nextLine();
+            clienteSelecionado = clienteService.buscarPorId(cpfCliente);
+
+            if(clienteSelecionado == null){
+                System.out.println("Cliente com ID '" + cpfCliente + "' não encontrado.");
+            }
+        }
+        System.out.println("Cliente Selecionado: " + clienteSelecionado.getNome() + "\n");
+
+        Nota novaNota = new Nota(clienteSelecionado);
+
+        boolean adicionarProdutos = true;
+        while(adicionarProdutos){
+            List<Produto> produtosDisponiveis = produtoService.listarTodos();
+            if(produtosDisponiveis.isEmpty()){
+                System.out.println("Não há nenhum produto cadastrado.");
+                break;
+            }
+
+            System.out.println("\n>>> PRODUTOS CADASTRADOS <<<");
+            for(Produto p : produtosDisponiveis){
+                System.out.println("ID: " + p.getCodigo() + ", Nome: " + p.getNome() + ", Preço: R$" + p.getPreco());
+            }
+
+            Produto produtoSelecionado = null;
+            int idProduto;
+            while(produtoSelecionado == null){
+                System.out.println("Digite o ID do produto para adicionar (ou '0' para terminar a adição de produtos): ");
+                idProduto = scanner.nextInt();
+                if(idProduto == 0){
+                    adicionarProdutos = false;
+                    break;
+                }
+                produtoSelecionado = produtoService.buscarPorCodigo(idProduto);
+
+                if(produtoSelecionado == null){
+                    System.out.println("Produto com ID " + idProduto + " não encontrado.");
+                }
+
+            }
+
+            if(!adicionarProdutos){
+                break;
+            }
+
+            int qtd = -1;
+            while(qtd <= 0){
+                System.out.println("Digite a quantidade de produtos a ser adicionado: ");
+                qtd = scanner.nextInt();
+                scanner.nextLine();
+
+                if(qtd <=0){
+                    System.out.println("Quantidade de produtos inválida!! Deve ser maior que zero.");
+                }
+            }
+
+            novaNota.adicionarProduto(produtoSelecionado, qtd);
+            System.out.println("Produto '" + produtoSelecionado.getNome() + "' ("+ qtd + "x) adicionado na nota");
+        }
+
+        if(novaNota.getProdutos().isEmpty()){
+            System.out.println("Nenhum item adicionado na nota. Nota sendo cancelada.");
+            return;
+        }
+
+        System.out.println("\n>>> NOTA DE COMPRA GERADA <<<");
+        novaNota.exibirResumo();
     }
 
 
