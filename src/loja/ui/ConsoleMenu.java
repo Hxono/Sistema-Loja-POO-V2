@@ -1,6 +1,7 @@
 package loja.ui;
 
 import loja.model.produto.*;
+import loja.model.cliente.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -8,9 +9,42 @@ import java.util.Scanner;
 
 public class ConsoleMenu {
     private ProdutoService produtoService = new ProdutoService();
+    private ClienteService clienteService = new ClienteService();
     private Scanner scanner = new Scanner(System.in);
 
     //--------------MENU----------------------
+    public void menuProdutos() {
+        int opcao;
+        do {
+            System.out.println("\n--- MENU PRODUTOS ---");
+            System.out.println("1. Cadastrar Produto");
+            System.out.println("2. Alterar Produto");
+            System.out.println("3. Cadastrar Cliente");
+            System.out.println("4. Alterar Cliente");
+            System.out.println("5. Criar Nota de Compra");
+            System.out.println("6. Listar Notas Emitidas");
+            System.out.println("7. Listar Produtos");
+            System.out.println("8. Listar Clientes");
+            System.out.println("0. Sair");
+            opcao = scanner.nextInt();
+            scanner.nextLine(); // limpar buffer
+            if (opcao < 0 || opcao > 8) {
+                System.out.println("Opção inválida! Tente novamente.");
+                continue;
+            }
+            switch (opcao) {
+                case 1 -> cadastrarProduto();
+                case 2 -> atualizarProduto();
+                case 3 -> cadastrarCliente();
+                case 4 -> atualizarCliente();
+                //case 5 -> criarNotaCompra();
+                //case 6 -> listarNotasEmitidas();
+                case 7 -> listarProdutos();
+                case 8 -> listarClientes();
+            }
+        } while (opcao != 0);
+    }
+
 
     private void cadastrarProduto() {
         System.out.print("Nome: ");
@@ -89,5 +123,56 @@ public class ConsoleMenu {
             }
             default -> System.out.println("Opção inválida.");
         }
+    }
+
+    private void cadastrarCliente() {
+        System.out.print("ID: ");
+        String id = scanner.nextLine();
+
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Endereço: ");
+        String endereco = scanner.nextLine();
+
+        System.out.print("Telefone: ");
+        String telefone = scanner.nextLine();
+
+        Cliente novoCliente = new Cliente(id, nome, endereco, telefone);
+        clienteService.adicionar(novoCliente);
+
+        System.out.println("Cliente cadastrado com sucesso!");
+    }
+    private void listarClientes() {
+        System.out.println("\n--- CLIENTES CADASTRADOS ---");
+        for (Cliente c : clienteService.listarTodos()) {
+            System.out.println(c);
+        }
+    }
+    private void atualizarCliente() {
+        System.out.print("Digite o ID do cliente que deseja alterar: ");
+        String id = scanner.nextLine();
+
+        Cliente cliente = clienteService.buscarPorId(id);
+
+        if (cliente == null) {
+            System.out.println("Cliente não encontrado!");
+            return;
+        }
+        System.out.println("Cliente encontrado: " + cliente);
+
+        System.out.print("Novo nome: ");
+        String novoNome = scanner.nextLine();
+        cliente.setNome(novoNome);
+
+        System.out.print("Novo endereço: ");
+        String novoEndereco = scanner.nextLine();
+        cliente.setEndereco(novoEndereco);
+
+        System.out.print("Novo telefone: ");
+        String novoTelefone = scanner.nextLine();
+        cliente.setTelefone(novoTelefone);
+
+        System.out.println("Cliente atualizado com sucesso!");
     }
 }
