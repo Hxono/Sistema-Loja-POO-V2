@@ -42,7 +42,7 @@ public class Nota {
 
     public void adicionarProduto(Produto produto, int quantidade){
         if(quantidade <= 0 ){
-            System.out.println("ERRO: A quantidade de prosutos não pode ser inferior a zero!!!");
+            System.out.println("ERRO: A quantidade de produtos não pode ser inferior a zero!!!");
             return;
         }
 
